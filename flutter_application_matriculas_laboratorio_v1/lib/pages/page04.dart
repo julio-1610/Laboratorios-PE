@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_matriculas_laboratorio_v1/models/gif.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert'; // Para decodificar la respuesta JSON
+import 'package:flutter_application_matriculas_laboratorio_v1/models/models.dart';
 
 class Page04 extends StatefulWidget {
   const Page04({super.key});
@@ -11,104 +9,199 @@ class Page04 extends StatefulWidget {
 }
 
 class _Page04State extends State<Page04> {
-  Future<List<Gif>>? _listadoGif;
+  Future<List<Curso>>? _listadoCursos;
+  Estudiante estudiante = Estudiante(
+    id: 1,
+    nombre: "Alexander Dominic Chavez Salas",
+    CUI: "20173381",
+    correo: "achavezsa@unsa.edu.pe",
+    contrasena: "12345678",
+  );
 
-  Future<List<Gif>> _getGifs() async {
-    final response = await http.get(Uri.parse(
-        "https://api.giphy.com/v1/gifs/trending?api_key=3QMaQbiYhCQqg02jOCj7IizORuS70zOp&limit=10&offset=0&rating=g&bundle=messaging_non_clips"));
+  List<Matricula> matriculas = [];
 
-    List<Gif> gifs = [];
+  Future<List<Curso>> _getCursos() async {
+    // Simulamos un retraso para cargar los cursos
+    await Future.delayed(Duration(seconds: 2));
 
-    if (response.statusCode == 200) {
-      // Decodificamos el JSON
-      String body =
-          utf8.decode(response.bodyBytes); // me asegura la decodificacion
+    // Lista de cursos simulados con vacantes y descripción
+    List<Curso> cursos = [
+      Curso(
+        id: 1,
+        codigo: "1233213",
+        nombre: "Plataformas Emergentes",
+        turno: Turno(
+          docente: "Ing Calienes",
+          horario: "Lun(8:50-10:40)_Mie(10:40-14:00)",
+          letra: "A",
+        ),
+        descripcion: "Este curso abarca plataformas emergentes y cómo aplicarlas en el desarrollo de software.",
+        vacantes: 5,
+      ),
+      Curso(
+        id: 2,
+        codigo: "9876543",
+        nombre: "Desarrollo Web",
+        turno: Turno(
+          docente: "Ing Pérez",
+          horario: "Mar(8:00-9:40)_Jue(10:00-12:00)",
+          letra: "B",
+        ),
+        descripcion: "Aprende a desarrollar aplicaciones web desde cero utilizando las últimas tecnologías.",
+        vacantes: 0,
+      ),
+      Curso(
+        id: 3,
+        codigo: "4567890",
+        nombre: "Inteligencia Artificial",
+        turno: Turno(
+          docente: "Ing Quispe",
+          horario: "Vie(8:00-10:00)",
+          letra: "C",
+        ),
+        descripcion: "Este curso introduce los conceptos de la inteligencia artificial y el aprendizaje automático.",
+        vacantes: 3,
+      ),
+    ];
 
-      final jsonData = jsonDecode(body);
-
-      print(jsonData["data"]);
-      for (var item in jsonData["data"]) {
-        gifs.add(
-          Gif(item["title"], item["images"]["fixed_height_small"]["url"]),
-        );
-      }
-
-      return gifs;
-      // Mapeamos los datos a objetos Gif
-    } else {
-      throw Exception("Fallo conexión");
-    }
+    return cursos;
   }
 
   @override
   void initState() {
     super.initState();
-    _listadoGif = _getGifs();
+    _listadoCursos = _getCursos();
+  }
+
+  bool _estaInscrito(int cursoId) {
+    return matriculas.any((matricula) => matricula.cursoId == cursoId);
+  }
+
+  void _inscribirEstudiante(Curso curso) {
+    setState(() {
+      matriculas.add(Matricula(
+        id: matriculas.length + 1,
+        estudianteId: estudiante.id,
+        CUIEstudiante: estudiante.CUI,
+        cursoId: curso.id,
+      ));
+      curso.vacantes--; // Disminuir vacantes
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: AppBar(
-      //title: Text("Pagina 04"),
-      //),
-      body: FutureBuilder(
-        future: _listadoGif,
+      appBar: AppBar(
+        title: Text("INSCRIPCIÓN"),
+      ),
+      body: FutureBuilder<List<Curso>>(
+        future: _listadoCursos,
         builder: (context, snapshot) {
-          // Verifica si el Future está en proceso de carga
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                Curso curso = snapshot.data![index];
+                bool inscrito = _estaInscrito(curso.id);
 
-          // Si el Future tiene datos
-          if (snapshot.hasData) {
-            return GridView.count(
-              crossAxisCount: 2,
-              children: _listadoDeGif(snapshot.data!),
+                return Card(
+                  margin: EdgeInsets.all(10),
+                  child: ListTile(
+                    title: Text(
+                      "${curso.nombre} (Turno ${curso.turno.letra})",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      "Código: ${curso.codigo}\nDocente: ${curso.turno.docente}",
+                    ),
+                    trailing: ElevatedButton(
+                      onPressed: (curso.vacantes > 0 && !inscrito)
+                          ? () {
+                              _mostrarModalInscripcion(context, curso);
+                            }
+                          : null, // Deshabilita el botón si las vacantes son 0 o ya está inscrito
+                      child: Text(inscrito
+                          ? "Inscrito"
+                          : (curso.vacantes > 0 ? "Inscribirse" : "Sin Vacantes")),
+                    ),
+                  ),
+                );
+              },
             );
           }
-          // Si ocurrió un error
-          else if (snapshot.hasError) {
-            return Text("Error: ${snapshot.error}");
-          }
-          // Si el snapshot no tiene datos ni error, algo falló
-          return Center(
-            child: CircularProgressIndicator(),
-          ); // Muestra un indicador de carga // Este return es por seguridad para manejar cualquier otro caso
+          return Center(child: Text("No hay cursos disponibles."));
         },
       ),
     );
   }
 
-  List<Widget> _listadoDeGif(List<Gif> data) {
-    List<Widget> gifs = [];
-
-    for (var item in data) {
-      gifs.add(
-        Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment
-                .stretch, // Asegura que el contenido ocupe todo el ancho
+  void _mostrarModalInscripcion(BuildContext context, Curso curso) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(
+            child: Text(
+              "Inscribirse en ${curso.nombre}",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // El contenedor para asegurarnos que la imagen ocupa todo el ancho
-              Expanded(
-                child: Image.network(
-                  item.url,
-                  fit: BoxFit
-                      .cover, // Ajusta la imagen para cubrir todo el espacio
-                ),
+              Text(
+                "Descripción:",
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  item.name,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center, // Centra el texto
+              SizedBox(height: 5),
+              Text(
+                curso.descripcion,
+                textAlign: TextAlign.justify,
+              ),
+              SizedBox(height: 10),
+              Center(
+                child: Column(
+                  children: [
+                    Text(
+                      "Horario:",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(curso.turno.horario.replaceAll("_", "\n")),
+                    SizedBox(height: 10),
+                    Text("Grupo: ${curso.turno.letra}"),
+                    SizedBox(height: 10),
+                    Text("Vacantes disponibles: ${curso.vacantes}"),
+                  ],
                 ),
               ),
             ],
           ),
-        ),
-      );
-    }
-
-    return gifs;
+          actions: [
+            ElevatedButton(
+              onPressed: curso.vacantes > 0
+                  ? () {
+                      _inscribirEstudiante(curso);
+                      Navigator.of(context).pop();
+                    }
+                  : null, // Deshabilita si no hay vacantes
+              child: Text(curso.vacantes > 0 ? "Confirmar Inscripción" : "Sin Vacantes"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancelar"),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
