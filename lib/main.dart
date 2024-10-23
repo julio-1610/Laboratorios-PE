@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:notas_fluter/view/login_view.dart';
 import 'package:provider/provider.dart';
-import 'view/note_view.dart';
-import 'viewmodel/note_viewmodel.dart';
+import 'viewmodel/user_viewmodel.dart';
+import 'viewmodel/note_viewmodel.dart';  // Asegúrate de importar el NoteViewModel
 
 void main() {
   runApp(MyApp());
@@ -10,14 +11,17 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => NoteViewModel()..fetchNotes(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => UserViewModel()),  // Proveedor para UserViewModel
+        ChangeNotifierProvider(create: (context) => NoteViewModel()),  // Proveedor para NoteViewModel
+      ],
       child: MaterialApp(
-        title: 'Flutter MVVM Notes',
+        title: 'Flutter MVVM Auth',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: NoteView(),
+        home: LoginView(),  // Iniciar con la pantalla de login
       ),
     );
   }
