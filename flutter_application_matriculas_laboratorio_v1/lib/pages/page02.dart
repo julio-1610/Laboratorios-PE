@@ -60,17 +60,24 @@ class _Page02State extends State<Page02> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Perfil del Usuario'),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Perfil",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Padding(
+              padding:
+                  const EdgeInsets.all(10.0), // Espaciado alrededor del título
+              child: Center(
+                // Centrar el título
+                child: Text(
+                  "Perfil",
+                  style: TextStyle(
+                    fontSize: 30, // Tamaño grande
+                    fontWeight: FontWeight.bold, // Negrita
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 10),
             Text("Nombre: ${userProfile['Nombre']}"),
@@ -79,8 +86,14 @@ class _Page02State extends State<Page02> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/page04'); // Ir a la página de inscripción
+                Navigator.pushNamed(
+                    context, '/page04'); // Ir a la página de inscripción
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    Color.fromARGB(255, 97, 3, 3), // Color de fondo rojo
+                foregroundColor: Colors.white, // Color del texto blanco
+              ),
               child: const Text("Inscribirse a un curso"),
             ),
             const SizedBox(height: 20),
@@ -90,20 +103,27 @@ class _Page02State extends State<Page02> {
             ),
             const SizedBox(height: 10),
             ListView.builder(
-              shrinkWrap: true, // Para que funcione dentro de SingleChildScrollView
+              shrinkWrap:
+                  true, // Para que funcione dentro de SingleChildScrollView
               itemCount: enrolledCourses.length,
               itemBuilder: (context, index) {
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 5),
                   child: ListTile(
-                    title: Text(enrolledCourses[index]['name']),
-                    subtitle: Text("Vacantes: ${enrolledCourses[index]['vacantes']}"),
+                    title: Text(
+                      enrolledCourses[index]['name'],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                        "Vacantes: ${enrolledCourses[index]['vacantes']}",
+                        style: TextStyle(color: Colors.white)),
                     trailing: IconButton(
-                      icon: const Icon(Icons.delete),
+                      icon: const Icon(Icons.delete, color: Colors.white),
                       onPressed: () {
                         _showUnenrollConfirmation(context, index);
                       },
                     ),
+                    tileColor: const Color.fromARGB(255, 97, 3, 3),
                   ),
                 );
               },

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_matriculas_laboratorio_v1/pages/page02.dart';
-import 'package:flutter_application_matriculas_laboratorio_v1/pages/page03.dart';
+
 import 'package:flutter_application_matriculas_laboratorio_v1/pages/page04.dart';
 import 'package:flutter/services.dart';
 
@@ -95,7 +95,7 @@ Widget cuerpo(BuildContext context) {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 141, 5, 5),
+                      color: const Color.fromARGB(255, 97, 3, 3),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -168,7 +168,7 @@ Widget botonAceptar(context) {
         borderRadius: BorderRadius.circular(5.0),
       ),
       iconColor: Color.fromARGB(255, 248, 248, 248),
-      backgroundColor: const Color.fromARGB(255, 141, 5, 5),
+      backgroundColor: const Color.fromARGB(255, 97, 3, 3),
       foregroundColor: Colors.white,
     ),
     onPressed: () {
@@ -191,24 +191,27 @@ class _MainPageState extends State<MainPage> {
   // Listado de páginas
   final List<Widget> _paginas = [
     Page02(), // Términos y condiciones
-    Page03(), // Contactos
+
     Page04(), // Imágenes
   ];
 
   // Títulos para cada página
   final List<String> _titulos = [
-    'Página 01', // Título para Page02
-    'Página 02', // Título para Page03
-    'Página 03', // Título para Page04
+    'Perfil de Usuario', // Título para Page02
+    'Incripcion de Laboratorios', // Título para Page03
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_titulos[_pagActual]),
+        title: Text(
+          _titulos[_pagActual],
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color.fromARGB(255, 97, 3, 3),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             // Regresar a la página de inicio
             Navigator.pop(context);
@@ -226,15 +229,11 @@ class _MainPageState extends State<MainPage> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.description), // Ícono para términos y condiciones
-            label: 'Términos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.contact_phone), // Ícono para contactos
-            label: 'Contactos',
+            label: 'Perfil',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.image), // Ícono para imágenes
-            label: 'Imágenes',
+            label: 'Inscripcion',
           ),
         ],
       ),

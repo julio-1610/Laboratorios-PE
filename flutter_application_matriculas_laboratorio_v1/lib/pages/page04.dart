@@ -35,7 +35,8 @@ class _Page04State extends State<Page04> {
           horario: "Lun(8:50-10:40)_Mie(10:40-14:00)",
           letra: "A",
         ),
-        descripcion: "Este curso abarca plataformas emergentes y cómo aplicarlas en el desarrollo de software.",
+        descripcion:
+            "Este curso abarca plataformas emergentes y cómo aplicarlas en el desarrollo de software.",
         vacantes: 5,
       ),
       Curso(
@@ -47,7 +48,8 @@ class _Page04State extends State<Page04> {
           horario: "Mar(8:00-9:40)_Jue(10:00-12:00)",
           letra: "B",
         ),
-        descripcion: "Aprende a desarrollar aplicaciones web desde cero utilizando las últimas tecnologías.",
+        descripcion:
+            "Aprende a desarrollar aplicaciones web desde cero utilizando las últimas tecnologías.",
         vacantes: 0,
       ),
       Curso(
@@ -59,7 +61,8 @@ class _Page04State extends State<Page04> {
           horario: "Vie(8:00-10:00)",
           letra: "C",
         ),
-        descripcion: "Este curso introduce los conceptos de la inteligencia artificial y el aprendizaje automático.",
+        descripcion:
+            "Este curso introduce los conceptos de la inteligencia artificial y el aprendizaje automático.",
         vacantes: 3,
       ),
     ];
@@ -90,11 +93,9 @@ class _Page04State extends State<Page04> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("INSCRIPCIÓN"),
-      ),
       body: FutureBuilder<List<Curso>>(
         future: _listadoCursos,
         builder: (context, snapshot) {
@@ -103,35 +104,64 @@ class _Page04State extends State<Page04> {
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                Curso curso = snapshot.data![index];
-                bool inscrito = _estaInscrito(curso.id);
-
-                return Card(
-                  margin: EdgeInsets.all(10),
-                  child: ListTile(
-                    title: Text(
-                      "${curso.nombre} (Turno ${curso.turno.letra})",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      "Código: ${curso.codigo}\nDocente: ${curso.turno.docente}",
-                    ),
-                    trailing: ElevatedButton(
-                      onPressed: (curso.vacantes > 0 && !inscrito)
-                          ? () {
-                              _mostrarModalInscripcion(context, curso);
-                            }
-                          : null, // Deshabilita el botón si las vacantes son 0 o ya está inscrito
-                      child: Text(inscrito
-                          ? "Inscrito"
-                          : (curso.vacantes > 0 ? "Inscribirse" : "Sin Vacantes")),
+            return SingleChildScrollView(
+              // Agrega un scroll si el contenido es largo
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start, // Alinear a la izquierda
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(
+                        16.0), // Espaciado alrededor del título
+                    child: Center(
+                      // Centrar el título
+                      child: Text(
+                        "Inscripción",
+                        style: TextStyle(
+                          fontSize: 30, // Tamaño grande
+                          fontWeight: FontWeight.bold, // Negrita
+                        ),
+                      ),
                     ),
                   ),
-                );
-              },
+                  ListView.builder(
+                    shrinkWrap:
+                        true, // Permite que el ListView ocupe solo el espacio necesario
+                    physics:
+                        NeverScrollableScrollPhysics(), // Deshabilita el desplazamiento
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      Curso curso = snapshot.data![index];
+                      bool inscrito = _estaInscrito(curso.id);
+
+                      return Card(
+                        margin: EdgeInsets.all(10),
+                        child: ListTile(
+                          title: Text(
+                            "${curso.nombre} (Turno ${curso.turno.letra})",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
+                            "Código: ${curso.codigo}\nDocente: ${curso.turno.docente}",
+                          ),
+                          trailing: ElevatedButton(
+                            onPressed: (curso.vacantes > 0 && !inscrito)
+                                ? () {
+                                    _mostrarModalInscripcion(context, curso);
+                                  }
+                                : null, // Deshabilita el botón si las vacantes son 0 o ya está inscrito
+                            child: Text(inscrito
+                                ? "Inscrito"
+                                : (curso.vacantes > 0
+                                    ? "Inscribirse"
+                                    : "Sin Vacantes")),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             );
           }
           return Center(child: Text("No hay cursos disponibles."));
@@ -185,13 +215,20 @@ class _Page04State extends State<Page04> {
           ),
           actions: [
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    const Color.fromARGB(255, 128, 8, 0), // Color de fondo rojo
+                foregroundColor: Colors.white, // Color del texto blanco
+              ),
               onPressed: curso.vacantes > 0
                   ? () {
                       _inscribirEstudiante(curso);
                       Navigator.of(context).pop();
                     }
                   : null, // Deshabilita si no hay vacantes
-              child: Text(curso.vacantes > 0 ? "Confirmar Inscripción" : "Sin Vacantes"),
+              child: Text(curso.vacantes > 0
+                  ? "Confirmar Inscripción"
+                  : "Sin Vacantes"),
             ),
             TextButton(
               onPressed: () {
