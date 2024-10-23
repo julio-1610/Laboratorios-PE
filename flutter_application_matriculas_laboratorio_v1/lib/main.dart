@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_matriculas_laboratorio_v1/pages/page02.dart';
 import 'package:flutter_application_matriculas_laboratorio_v1/pages/page03.dart';
 import 'package:flutter_application_matriculas_laboratorio_v1/pages/page04.dart';
+import 'package:flutter/services.dart';
 
-// Material patron de diseño de google
 void main() => runApp(MiApp());
 
 class MiApp extends StatelessWidget {
@@ -13,8 +13,8 @@ class MiApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Titulo de mi app",
-      home: MyHomePage(), // widget para el home
+      title: "Matricula Labs",
+      home: MyHomePage(),
     );
   }
 }
@@ -36,126 +36,147 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 Widget cuerpo(BuildContext context) {
-  return Container(
-    decoration: const BoxDecoration(
-        image: DecorationImage(
-            image: NetworkImage(
-                "https://img.freepik.com/vector-gratis/ilustracion-noche-verano-acuarela-columpio-arbol_23-2149459683.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1728604800&semt=ais_hybrid-rr-similar"),
-            fit: BoxFit.cover)),
-    child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          nombre(),
-          campoUsuario(),
-          campoContrasena(),
-          botonEntrar(context),
-          botonIngresar(context),
-          botonPagina03(context),
-          botonPagina04(context),
-        ],
+  return Column(
+    children: [
+      // Cabecera
+      Container(
+        color: const Color.fromARGB(255, 97, 3, 3),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.network(
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkKGnYpNgEG4POueCPXV_RNQ42tSzTS0kHv4IYZKneE8lwBr0H26iwkUZKbHwcgpUlrLU&usqp=CAU', // URL del logo de UNSA
+                  height: 70,
+                ),
+                const SizedBox(width: 10),
+                const Text(
+                  "MATRICULAS LABS - 2024",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
 
-Widget nombre() {
-  return const Text(
-    "Sing in",
-    style: TextStyle(
-      color: Colors.white,
-      fontSize: 25.0,
-      fontWeight: FontWeight.bold,
-    ),
+      // Formulario
+      Expanded(
+        child: Center(
+          child: SingleChildScrollView(
+            // Añadido para evitar el overflow
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 10),
+                  const Text(
+                    "INGRESO DEL ALUMNO",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 141, 5, 5),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Image.network(
+                    'https://images.emojiterra.com/microsoft/fluent-emoji/1024px/1f512_color.png', // Aquí puedes cambiar por tu imagen
+                    height: 100,
+                  ),
+                  const SizedBox(height: 10),
+                  campoUsuario(),
+                  const SizedBox(height: 10),
+                  campoContrasena(),
+                  const SizedBox(height: 20),
+                  botonAceptar(context),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+
+      // Footer
+      Container(
+        padding: const EdgeInsets.all(8.0),
+        child: const Text(
+          "Universidad Nacional de San Agustín de Arequipa",
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.black54,
+          ),
+        ),
+      ),
+    ],
   );
 }
 
 Widget campoUsuario() {
-  return Container(
-    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-    child: const TextField(
-      decoration: InputDecoration(
-        hintText: "user",
-        fillColor: Colors.white,
-        filled: true,
+  return TextField(
+    decoration: InputDecoration(
+      labelText: "Ingrese su Usuario",
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5.0),
       ),
+      fillColor: Colors.white,
+      filled: true,
     ),
   );
 }
 
 Widget campoContrasena() {
-  return Container(
-    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-    child: const TextField(
-      obscureText: true,
-      decoration: InputDecoration(
-        hintText: "Password",
-        fillColor: Colors.white,
-        filled: true,
+  return TextField(
+    obscureText: true,
+    decoration: InputDecoration(
+      labelText: "Ingrese su contraseña",
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5.0),
       ),
+      fillColor: Colors.white,
+      filled: true,
     ),
   );
 }
 
-Widget botonEntrar(context) {
-  return ElevatedButton(
+Widget botonAceptar(context) {
+  return ElevatedButton.icon(
+    icon: const Icon(Icons.lock),
+    label: const Text("Aceptar"),
     style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 4)),
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+      iconColor: Color.fromARGB(255, 248, 248, 248),
+      backgroundColor: const Color.fromARGB(255, 141, 5, 5),
+      foregroundColor: Colors.white,
+    ),
     onPressed: () {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => MainPage()),
       );
     },
-    child: Text("Login - NavBar"),
-  );
-}
-
-Widget botonIngresar(BuildContext context) {
-  return ElevatedButton(
-    style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 6),
-    ),
-    onPressed: () => {
-      debugPrint("presionaste el boton"),
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Page02()),
-      ),
-    },
-    child: Text("Pagina 02"),
-  );
-}
-
-Widget botonPagina03(BuildContext context) {
-  return ElevatedButton(
-    style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 6),
-    ),
-    onPressed: () => {
-      debugPrint("presionaste el boton"),
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Page03()),
-      ),
-    },
-    child: Text("Pagina 03"),
-  );
-}
-
-Widget botonPagina04(BuildContext context) {
-  return ElevatedButton(
-    style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 6),
-    ),
-    onPressed: () => {
-      debugPrint("presionaste el boton"),
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Page04()),
-      ),
-    },
-    child: Text("Pagina 04"),
   );
 }
 
